@@ -1,3 +1,4 @@
 {
 "mongoURI": "mongodb+srv://hills62:Nomolly@cluster0.l2bcm.mongodb.net/Cluster0?retryWrites=true&w=majority"
+"jwtSecret": "maytheforcebewithyou"
 }
