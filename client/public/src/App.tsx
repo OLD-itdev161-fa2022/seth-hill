@@ -7,7 +7,23 @@ import Login from './components/Login/Login';
 
 class App extends React.Component {
     state = {
-        data: null
+        data: null,
+        token: null,
+        user: null
+    }
+
+    componentDidMount() {
+        axios.get('http://localhost:5000')
+        .then((response) => {
+            this.setState({
+                data: response.data
+            })
+        })
+        .catch((error) => {
+            console.error(`Error fetching data: ${error}`);
+        })
+
+        this.authenticationUser();
     }
 
     componentDidMount() {
@@ -22,15 +38,44 @@ class App extends React.Component {
             })
     }
 
+    authenticateUser = () => {
+        const token = localStorage.getItem('token');
+
+        if(!token) {
+            localStorage.removeItem('user')
+            this.setState({ user: null });
+        }
+
+        if (token) {
+            const config = {
+                header: {
+                    'x-auth-token': token
+                }
+            }
+            axios.get('http://localhost:5000/api/auth', config)
+            .then((response) => {
+                localStorage.setItem('user', response.data.name)
+                this.setState({ user: response.data.name })
+            })
+            .catch((error) => {
+                localStorage.removeItem('user');
+                this.setState({ user: null });
+                console.error(`Error logging in: ${error}`);
+            })
+        }
+    }
+
+    logOut = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        this.setState({ user: null, token: null });
+    }
+
     render() {
-        return (
-            <div className="App">
-                <header className="App-header">
-                    GoodThings
-                </header>
-                {this.state.data}
-            </div>
-        );
+        let { user, data } =thisState;
+        const authProps = {
+            authenticationnUser: this.authenticateUser
+        }
     }
 }
 
