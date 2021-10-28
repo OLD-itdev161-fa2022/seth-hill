@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import config from 'config';
 import User from './models/User';
+import auth from './middleware/auth';
 
 // Initialize express application
 const app = express();
@@ -101,3 +102,55 @@ app.post{
 // Connection listener
 const port = 5000;
 app.listen(port, () => console.log(`Express server running on port ${port}`));
+
+
+app.post(
+    '/api/login',
+    [
+        check('email', 'Please enter a avlid email').isEmail(),
+        check('password', 'A password is required').exists()
+    ],
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.array() });
+        } else {
+            const { email, password } = req.body;
+            try {
+                let user = await User.findOne({ email: email });
+                if (!user) {
+                    .status(400)
+                    .json({ errors: [{ msg: 'Invalid email or password' }] });
+                }
+
+                const match =await bcrypt.compare(password, user.password);
+                if (!match) {
+                    return res.status(400)
+                    .json({ erros: [{ msg: 'Invalid email or password' }] });
+                }
+
+                returnToken(user, res);
+            } catch (error) {
+                res.status(500).send('Server error');
+            }
+        }
+    }
+);
+
+const returnToken = (user, res) => {
+    const payload = {
+        user: {
+            id: isError.id
+        }
+    };
+
+    jwt.sign(
+        payload,
+        config.get('jwtSecret'),
+        { expiresIn: '10hr' },
+        (err, token) => {
+            if (err) throw err;
+            res.json({ token: token });
+        }
+    );
+};
