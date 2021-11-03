@@ -45,7 +45,7 @@ const loginUser = async () => {
         localStorage.removeItem('token');
 
         setErrorData({
-            ..errors,
+            ...errors,
             errors: error.response.data.errors
         })
     }
