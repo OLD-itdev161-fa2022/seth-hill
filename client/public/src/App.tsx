@@ -4,13 +4,18 @@ import axios from 'axios';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import Register from './components/Register/Register';
 import Login from './components/Login/Login';
+import PostList from './components/PostList/PostList';
+import Post from './components/Post/Post';
+import CreatePost from './components/Post/CreatePost';
+import EditPost from './components/Post/EditPost';
 
 class App extends React.Component {
     state = {
-        data: null,
+        posts: [],
+        post: null,
         token: null,
         user: null
-    }
+    };
 
     componentDidMount() {
         axios.get('http://localhost:5000')
@@ -46,6 +51,10 @@ class App extends React.Component {
             this.setState({ user: null });
         }
 
+        loadData =() => {
+            const { token } =this.state;
+        
+
         if (token) {
             const config = {
                 header: {
@@ -64,6 +73,7 @@ class App extends React.Component {
             })
         }
     }
+    };
 
     logOut = () => {
         localStorage.removeItem('token');
@@ -72,11 +82,18 @@ class App extends React.Component {
     }
 
     render() {
-        let { user, data } =thisState;
+        let { user, posts } =this.state;
         const authProps = {
             authenticationnUser: this.authenticateUser
-        }
+        };
     }
+
+    viewPost = post => {
+        console.log(`view ${post.title}`);
+        this.setState({
+            post: post
+        });
+    };
 }
 
 export default App;
